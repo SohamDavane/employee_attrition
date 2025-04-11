@@ -2,7 +2,7 @@
 
 An interactive machine learning web application built using **Streamlit** to predict employee attrition (whether an employee is likely to leave the company) based on key HR metrics.
 
-![App Screenshot](images/ChatGPT%20Image%20Apr%2011%2C%202025%2C%2001_29_27%20AM.png)
+![App Screenshot](images/Screenshot%202025-04-11%20211741.png)
 
 ---
 
@@ -11,14 +11,12 @@ An interactive machine learning web application built using **Streamlit** to pre
 This project uses a **Random Forest Classifier** trained on a realistic employee dataset to predict attrition.  
 The app allows HR managers or analysts to input employee data and instantly get a prediction on whether the employee is at risk of leaving.
 
-The model was trained in **Google Colab**, and the training notebook is included in the repository.
+The model was trained in a **Google Colab notebook**.
 
 ---
 
 ## 🧠 How the Model Was Trained
 
-- Training was done in [this Colab Notebook](https://colab.research.google.com/github/your-username/your-repo-name/blob/main/model_training.ipynb)  
-  *(📌 Replace the link with your actual Colab URL)*
 - The dataset used is `realistic_employee_attrition.csv`.
 - A `RandomForestClassifier` was trained using features like:
   - Age
@@ -30,8 +28,8 @@ The model was trained in **Google Colab**, and the training notebook is included
   - Hours Worked Per Week
   - Distance from Home
 
-> **Note:** The `.pkl` model file is not included in the repo due to GitHub file size limitations.  
-You can regenerate it by running the Colab notebook.
+> **Note:** The `.pkl` model file is not included in the repo due to GitHub's 25MB limit.  
+You can regenerate it using the Colab notebook used during training.
 
 ---
 
