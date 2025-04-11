@@ -2,7 +2,7 @@
 
 An interactive machine learning web application built using **Streamlit** to predict employee attrition (whether an employee is likely to leave the company) based on key HR metrics.
 
-![App Screenshot](images/Screenshot%202025-04-11%20211741.png)
+![App Screenshot](app_screenshot.png)
 
 ---
 
