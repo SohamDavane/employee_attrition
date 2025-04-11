@@ -1,3 +1,4 @@
+# app.py
 import streamlit as st
 import joblib
 import pandas as pd
@@ -35,21 +36,22 @@ except FileNotFoundError:
 
 # Load model
 try:
-    model = joblib.load("attrition_model (1).pkl")
+    model = joblib.load("attrition_model_no_overtime_tuned.pkl")
 except FileNotFoundError:
-    st.error("Error: attrition_model (1).pkl not found. Please ensure the model file is in the correct directory.")
+    st.error("Error: attrition_model_no_overtime_tuned.pkl not found. Please ensure the model file is in the correct directory.")
     st.stop()
 
 # --- Simulate Evaluation (Replace with your actual evaluation data if available) ---
-X = df.drop('Attrition', axis=1)
-y = df['Attrition']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-y_pred = model.predict(X_test)
+X_eval = df[['Age', 'Monthly_Salary', 'Years_at_Company', 'Work_Life_Balance', 'Job_Involvement',
+             'Hours_Worked_Per_Week', 'Distance_from_Home']]
+y_eval = df['Attrition']
+X_train_eval, X_test_eval, y_train_eval, y_test_eval = train_test_split(X_eval, y_eval, test_size=0.2, random_state=42)
+y_pred_eval = model.predict(X_test_eval)
 
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
+accuracy = accuracy_score(y_test_eval, y_pred_eval) * 100
+precision = precision_score(y_test_eval, y_pred_eval) * 100
+recall = recall_score(y_test_eval, y_pred_eval) * 100
+f1 = f1_score(y_test_eval, y_pred_eval) * 100
 # ----------------------------------------------------------------------------------
 
 # Display the image instead of the main title
@@ -98,23 +100,22 @@ if predict_button:
             'Years_at_Company': [years],
             'Work_Life_Balance': [wlb],
             'Job_Involvement': [involve],
-            'Overtime': [overtime_val],
             'Hours_Worked_Per_Week': [hours],
             'Distance_from_Home': [distance]
         })
         prediction = model.predict(input_data)[0]
-        probability = model.predict_proba(input_data)[0][1]
+        probability = model.predict_proba(input_data)[0][1] * 100  # Convert probability to percentage
 
         if prediction == 1:
-            st.error(f"⚠️ Employee likely to leave (Probability: {probability:.2f})")
+            st.error(f"⚠️ Employee likely to leave (Probability: {probability:.2f}%)")
         else:
-            st.success(f"✅ Employee likely to stay (Probability: {1 - probability:.2f})")
+            st.success(f"✅ Employee likely to stay (Probability: {1 - (probability / 100):.2f}%)") # Corrected stay probability
 
 st.markdown("---")
 st.markdown("<h2 class='centered-text'>Overall Employee Retention</h2>", unsafe_allow_html=True)
 attrition_rate = df['Attrition'].mean()
-stayed_proportion = 1 - attrition_rate
-st.progress(stayed_proportion, text=f"{stayed_proportion * 100:.2f}% of employees retained")
+stayed_proportion = (1 - attrition_rate) * 100
+st.progress(stayed_proportion / 100, text=f"{stayed_proportion:.2f}% of employees retained")
 
 with st.expander("Show Sample Data"):
     st.subheader("First 10 Rows of Dataset")
@@ -125,18 +126,18 @@ st.markdown("---")
 st.markdown("<h2 class='centered-text'>Feature Importance</h2>", unsafe_allow_html=True)
 if hasattr(model, 'feature_importances_'):
     feature_names = ['Age', 'Monthly_Salary', 'Years_at_Company', 'Work_Life_Balance',
-                     'Job_Involvement', 'Overtime', 'Hours_Worked_Per_Week', 'Distance_from_Home']
+                     'Job_Involvement', 'Hours_Worked_Per_Week', 'Distance_from_Home']
     importances = pd.Series(model.feature_importances_, index=feature_names)
     sorted_importances = importances.sort_values(ascending=False)
 
     fig_importance_line = px.line(sorted_importances, x=sorted_importances.index, y=sorted_importances.values,
-                                  title='Feature Importance',
-                                  labels={'index': 'Feature', 'y': 'Importance Score'},
-                                  markers=True,
-                                  line_shape='spline',
-                                  color_discrete_sequence=['#66CDAA'],
-                                  template='plotly_dark'
-                                 )
+                                    title='Feature Importance',
+                                    labels={'index': 'Feature', 'y': 'Importance Score'},
+                                    markers=True,
+                                    line_shape='spline',
+                                    color_discrete_sequence=['#66CDAA'],
+                                    template='plotly_dark'
+                                    )
 
     fig_importance_line.update_traces(
         marker=dict(size=12,
@@ -161,10 +162,10 @@ else:
 
 st.markdown("---")
 with st.expander("Model Evaluation"):
-    st.write(f"**Accuracy:** {accuracy:.4f}")
-    st.write(f"**Precision (for Attrition=1):** {precision:.4f}")
-    st.write(f"**Recall (for Attrition=1):** {recall:.4f}")
-    st.write(f"**F1-Score (for Attrition=1):** {f1:.4f}")
+    st.write(f"**Accuracy:** {accuracy:.2f}%")
+    st.write(f"**Precision (for Attrition=1):** {precision:.2f}%")
+    st.write(f"**Recall (for Attrition=1):** {recall:.2f}%")
+    st.write(f"**F1-Score (for Attrition=1):** {f1:.2f}%")
 
 st.markdown("---")
 st.markdown(f"<p class='centered-text'>📊 Built with Streamlit | Soham Dinesh Davane © | <a href='https://github.com/SohamDavane' target='_blank'>My GitHub</a></p>", unsafe_allow_html=True)
